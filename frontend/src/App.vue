@@ -17,21 +17,17 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-declare let websocket: WebSocket
-
 export default defineComponent({
   data() {
     return {
       isDark: true,
-      ws: websocket as WebSocket,
       connected: 'null',
+      ws: {} as WebSocket,
     }
   },
-  // beforeMount() {
-
-  // },
   methods: {
     sendMessage(event: Event) {
+      // if(this.ws === null || this.ws.readyState)
       var input = document.getElementById('messageText') as HTMLInputElement
       this.ws.send(input.value)
       input.value = ''
@@ -40,29 +36,46 @@ export default defineComponent({
     setConnection(status: string) {
       this.connected = status
     },
-    connect() {
-      websocket = new WebSocket('ws://localhost:8000/ws/1')
-      this.ws.onmessage = function (event) {
-        var messages = document.getElementById('messages')
-        var message = document.createElement('li')
-        var content = document.createTextNode(event.data)
-        message.appendChild(content)
-        if (messages) {
-          messages.appendChild(message)
+    async connect() {
+      if (isEmpty(this.ws) || this.ws.readyState !== 1) {
+        this.ws = await new WebSocket('ws://localhost:8000/ws/1')
+        this.ws.onmessage = function (event: Event) {
+          var messages = document.getElementById('messages')
+          var message = document.createElement('li')
+          var content = document.createTextNode((event as MessageEvent).data)
+          message.appendChild(content)
+          if (messages) {
+            messages.appendChild(message)
+          }
         }
-      }
-      this.ws.onopen = function () {
-        console.log('connection open!!')
-      }
-      this.ws.onclose = function () {
-        console.log('connection closed!!')
+        this.ws.onopen = function () {
+          console.log('connection open!!')
+        }
+        this.ws.onclose = function () {
+          console.log('connection closed!!')
+        }
+      } else {
+        console.log('connection already made')
+        return
       }
     },
     disconnect() {
-      this.ws.close()
+      if (isEmpty(this.ws) || this.ws.readyState !== 1) {
+        console.log('connection already closed')
+        return
+      } else {
+        this.ws.close()
+      }
     },
   },
 })
+
+function isEmpty(object: any) {
+  for (const property in object) {
+    return false
+  }
+  return true
+}
 </script>
 
 <style>
