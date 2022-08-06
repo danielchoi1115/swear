@@ -34,3 +34,6 @@ pnpm-debug.log*
 .viminfo
 .gitconfig
 node-test
+bitnami/
+.vim/
+.wget-*
