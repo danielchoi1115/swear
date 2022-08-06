@@ -1,13 +1,18 @@
 
 
 from typing import List
+import uvicorn
 from fastapi import FastAPI, Response, WebSocket, WebSocketDisconnect, status, UploadFile, File, Request, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from datetime import datetime
 import json
 
+import router
+import asyncio
+from config import loop
 from core.settings import Settings
+from schema import Message
 
 settings = Settings(auth_key='aa', api_key='bb')
 app = FastAPI()
@@ -18,7 +23,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 class ConnectionManager:
     def __init__(self) -> None:
@@ -38,15 +42,13 @@ class ConnectionManager:
         for connection in self.active_connections:
             await connection.send_text(message)
 
-
 manager = ConnectionManager()
-
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
     now = datetime.now()
-    current_time = now.strftime("$H:%M")
+    current_time = now.strftime("%H:%M")
 
     try:
         while True:
@@ -56,7 +58,11 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 "client_id": client_id,
                 "message": data
             }
-            await manager.broadcast(json.dumps(message))
+            
+            # print('data is',data)
+            # await manager.broadcast(json.dumps(message))
+
+            await router.produce(Message(message=str(data)))
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         message = {
@@ -66,17 +72,19 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         }
         await manager.broadcast(json.dumps(message))
 
+    
+    # await websocket.accept()
+    # while True:
+    #     data = await websocket.receive_text()
+    #     print('data is',data)
+    #     await websocket.send_text(f"Message text was: {data}")
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
+
+app.include_router(router.route)
+loop.create_task(router.consume(manager))
 
 # def init():
-#     print('start!!')
-
+#     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
 
 # if __name__ in ("__main__"):
 #     init()
