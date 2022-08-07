@@ -48,25 +48,22 @@ manager = ConnectionManager()
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager.connect(websocket)
     now = datetime.now()
-    current_time = now.strftime("%H:%M")
-
     try:
         while True:
             data = await websocket.receive_text()
-            message = {
-                "time": current_time,
-                "client_id": client_id,
-                "message": data
-            }
-            
+            message = Message(
+                sendFrom=client_id,
+                sendTo=111,
+                time=now,
+                message=str(data)
+            )
             # print('data is',data)
             # await manager.broadcast(json.dumps(message))
-
-            await router.produce(Message(message=str(data)))
+            await router.produce(message)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         message = {
-            "time": current_time,
+            "time": str(now),
             "client_id": client_id,
             "message": "offline"
         }
@@ -81,8 +78,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
 
 
 app.include_router(router.route)
-loop.create_task(router.consume(manager))
-
 # def init():
 #     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
 
