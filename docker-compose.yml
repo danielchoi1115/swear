@@ -14,8 +14,30 @@ volumes:
     external: true
   volume-kafka:
     external: true
+  mongo:
+    external: true
+  mongoconfig:
+    external: true
 
 services:
+  mongodb:
+    image: mongo
+    # always restart when container is started
+    restart: always
+    # container name
+    container_name: mongo-container
+    # set port (from:to)
+    ports:
+      - "27017:27017"
+    environment: 
+      # MongoDB Username and password
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: Tmd3752fuf!@
+    volumes:
+      # -v (directory mount setting)
+      - mongo:/data/db
+      - mongoconfig:/data/configdb
+
   zookeeper:
     user: "1000"
     image: 'bitnami/zookeeper:3.8.0'
