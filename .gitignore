@@ -37,3 +37,4 @@ node-test
 bitnami/
 .vim/
 .wget-*
+.vuerc
