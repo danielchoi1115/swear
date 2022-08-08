@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { font-size: 125%; } 
+    @media all and (max-width: 1250px) {
+        html { font-size: 115%; } 
+      }
+      @media all and (max-width: 750px) {
+        html { font-size: 105%; } 
+      }
+.grid-rows-12 {
+    grid-template-rows: repeat(12, minmax(0, 1fr));
+}
+.row-start-12 {
+    grid-row-start: 12;
+}
+.row-end-12 {
+    grid-row-end: 12;
+}
+.row-end-13 {
+    grid-row-end: 13;
+}
+
+.h-192 {
+    height: 48rem/* 384px */;
+}

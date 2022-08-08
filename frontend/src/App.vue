@@ -1,23 +1,28 @@
 <template>
-  <html>
+  <html class="bg-cool-gray-100">
     <head>
       <title>Chat</title>
     </head>
-    <body>
-      <button @click="connect">Connect</button>
-      <button @click="disconnect">Disconnect</button>
+    <body class="">
+      <button @click="connect" class="bg-blue-500 hover:bg-blue-700">Connect</button>
+      <button @click="disconnect" class="bg-blue-500 hover:bg-blue-700">Disconnect</button>
       <div>{{ connected }}</div>
       <h1>WebSocket Chat</h1>
-      <input type="text" id="messageText" autocomplete="off" />
-      <button @click="sendMessage">Send</button>
+      <input type="text" class="border-red-500 border-solid border-4" id="messageText" autocomplete="off" />
+      <button @click="sendMessage" class="bg-red-400">Send</button>
       <ul id="messages"></ul>
+
+      <SwContainer> </SwContainer>
     </body>
   </html>
 </template>
 
 <script lang="ts">
+import { SwContainer } from './layouts/index'
 import { defineComponent } from 'vue'
+
 export default defineComponent({
+  components: { SwContainer },
   data() {
     return {
       isDark: true,
