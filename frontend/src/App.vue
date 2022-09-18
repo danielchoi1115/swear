@@ -12,7 +12,7 @@
       <button @click="sendMessage" class="bg-red-400">Send</button>
       <ul id="messages"></ul>
 
-      <SwContainer> </SwContainer>
+      <!-- <SwContainer> </SwContainer> -->
     </body>
   </html>
 </template>
@@ -22,7 +22,6 @@ import { SwContainer } from './layouts/index'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  components: { SwContainer },
   data() {
     return {
       isDark: true,
