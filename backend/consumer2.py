@@ -1,5 +1,5 @@
 from config import loop, KAFKA_BOOTSTRAP_SERVERS, KAFKA_CONSUMER_GROUP, KAFKA_TOPIC
-from aiokafka import AIOKafkaConsumer, ConsumerRecord
+from aiokafka import AIOKafkaConsumer
 import asyncio
 # KAFKA_BOOTSTRAP_SERVERS= "localhost:9093"
 # KAFKA_TOPIC="kafka"
@@ -9,14 +9,14 @@ async def consume():
     consumer = AIOKafkaConsumer(
         KAFKA_TOPIC,
         auto_offset_reset='earliest',
-        # enable_auto_commit=True,
+        enable_auto_commit=True,
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS, group_id=KAFKA_CONSUMER_GROUP
     )
-    print('consumer 1 listening')
+    print('consumer 2 listening')
     await consumer.start()
     try:
         async for msg in consumer:
-            await broadcast(msg.value)
+            await broadcast(str(msg))
             await consumer.commit()
     finally:
         await consumer.stop()
