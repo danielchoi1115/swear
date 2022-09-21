@@ -19,7 +19,7 @@ async def run():
         _payload = json.dumps(_data).encode("utf-8")
         await producer.send_and_wait(topic='kafka', value=_payload)
         print(_data)
-        time.sleep(0.5)
+        time.sleep(1)
     await producer.stop()
         
 
